@@ -122,23 +122,5 @@ switch ($act) {
 	$err = 'wrong command';
 }
 
-/*
-
-$out = "start={$req}".time();
-unset($pids);
-exec('pgrep omxplayer', $pids);
-if ( empty($pids) ) {
-@unlink ('omxfifo');
-posix_mkfifo('omxfifo', 0777);
-chmod('omxfifo', 0777);
-//shell_exec('omxplayer -o hdmi /home/pi/www/1.mkv </home/pi/www/omxfifo >/dev/null 2>&1 &');
-//sleep(5);
-//shell_exec('echo -n . >/home/pi/www/omxfifo');
-shell_exec ('/home/pi/www/test.sh /home/pi/www/1.mkv');
-} else {
-$out .= ' omxplayer is already runnning';
-}
-*/
-
 $GLOBALS['_RESULT'] = $result;
 ?>
