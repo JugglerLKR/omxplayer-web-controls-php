@@ -10,18 +10,19 @@
 		<?php
 		error_reporting(E_ALL);
 		define(FIFO, $_SERVER['DOCUMENT_ROOT'].'/omxplayer_fifo');
-		$omxsh = "#!/bin/sh\nomxplayer -p -o hdmi \"$1\" <".FIFO." >/dev/null 2>&1 &\nsleep 1\necho -n . >".FIFO."\n";
+		$omxsh = "#!/bin/sh\nsudo sh -c \"./cls.sh\"\nomxplayer -p -o hdmi \"$1\" <".FIFO." >/dev/null 2>&1 &\nsleep 1\necho -n . >".FIFO."\n";
 
 
 		if ( @file_get_contents('omx_php.sh') != $omxsh ) {
 
+			$processUser = posix_getpwuid(posix_geteuid());
 			if ( is_writable('/dev/vchiq') ) {
 				echo '/dev/vchiq is writable - OK<br>';
 			} else {
-				$processUser = posix_getpwuid(posix_geteuid());
 				echo '/dev/vchiq is not writable for httpd user<br>';
 				echo 'you have to run shell command:<br>';
 				echo 'sudo usermod -a -G video '.$processUser['name'].'<br>';
+				echo 'this will allow http server user which runs omxplayer access /dev/vchiq to display video<br>';
 				die();
 			}
 
@@ -47,6 +48,12 @@
 			}	else {
 				echo 'error saving shell script - please fix permissions';
 			}
+			
+			echo "<h1 class=\"error\">Please note - if you want to clear screen before player start please modify cls.sh to your needs and run this command from shell</h1>";
+			echo "<p><b><i>sudo sh -c 'echo \"".$processUser['name']." ALL=(ALL) NOPASSWD: /bin/sh -c ./cls.sh\" >/etc/sudoers.d/".$processUser['name']." && chmod 0640 /etc/sudoers.d/".$processUser['name']."'</i></b></p>";
+			echo "<p>in short this command allows cls.sh script to do necessary tasks to clear screen and it can be done only using sudo,
+						and command add this cls.sh scirpt rights to do so for apache</p>";
+			
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +62,7 @@
 		$path = !empty($_REQUEST['path']) ? $_REQUEST['path'] : dirname(__FILE__); // the path the script should access
 
 		if ($_REQUEST['save'] == 'save') {
-			if ( file_put_contents('cfg.php', "<?php\ndefine(FIFO, '".FIFO."');\ndefine(PATH, '".$path."');\n?>\n") ) {
+			if ( file_put_contents('cfg.php', "<?php\ndefine('FIFO', '".FIFO."');\ndefine('PATH', '".$path."');\n?>\n") ) {
 				header("Location: omxplayer.php");
 			} else {
 				echo 'error saving config file - please fix permissions';
