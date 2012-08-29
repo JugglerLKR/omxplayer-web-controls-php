@@ -11,7 +11,7 @@ function play($file) {
 		@unlink (FIFO);
 		posix_mkfifo(FIFO, 0777);
 		chmod(FIFO, 0777);
-		shell_exec ( $_SERVER['DOCUMENT_ROOT'].'/omx_php.sh '.escapeshellarg($file));
+		shell_exec ( getcwd().'/omx_php.sh '.escapeshellarg($file));
 		$out = 'playing '.basename($file);
 	} else {
 		$err = 'omxplayer is already runnning';

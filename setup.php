@@ -9,9 +9,8 @@
 
 		<?php
 		error_reporting(E_ALL);
-		define(FIFO, $_SERVER['DOCUMENT_ROOT'].'/omxplayer_fifo');
+		define('FIFO', getcwd().'/omxplayer_fifo');
 		$omxsh = "#!/bin/sh\nsudo sh -c \"./cls.sh\"\nomxplayer -p -o hdmi \"$1\" <".FIFO." >/dev/null 2>&1 &\nsleep 1\necho -n . >".FIFO."\n";
-
 
 		if ( @file_get_contents('omx_php.sh') != $omxsh ) {
 
@@ -47,13 +46,14 @@
 				echo 'config saved - OK';
 			}	else {
 				echo 'error saving shell script - please fix permissions';
+				die();
 			}
-			
+
 			echo "<h1 class=\"error\">Please note - if you want to clear screen before player start please modify cls.sh to your needs and run this command from shell</h1>";
 			echo "<p><b><i>sudo sh -c 'echo \"".$processUser['name']." ALL=(ALL) NOPASSWD: /bin/sh -c ./cls.sh\" >/etc/sudoers.d/".$processUser['name']." && chmod 0640 /etc/sudoers.d/".$processUser['name']."'</i></b></p>";
 			echo "<p>in short this command allows cls.sh script to do necessary tasks to clear screen and it can be done only using sudo,
-						and command add this cls.sh scirpt rights to do so for apache</p>";
-			
+			and command add this cls.sh scirpt rights to do so for apache</p>";
+
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////
